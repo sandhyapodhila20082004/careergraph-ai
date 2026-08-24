@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block title %}Candidates Explorer - CareerGraph AI{% endblock %}
+
+{% block content %}
+<div class="card-header" style="border: none; padding: 0; margin-bottom: 1.5rem;">
+    <div>
+        <h2>Candidate Intelligence Explorer</h2>
+        <p style="color: var(--text-muted);">Explore candidate profiles, graph-connected skillsets, and recommendations.</p>
+    </div>
+</div>
+
+<div class="grid-3">
+    {% for cand in candidates %}
+    <div class="card" style="display: flex; flex-direction: column; justify-content: space-between;">
+        <div>
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.75rem;">
+                <div>
+                    <h3 style="font-size: 1.25rem;">{{ cand.name }}</h3>
+                    <div style="color: var(--accent-blue); font-size: 0.85rem;">{{ cand.email }}</div>
+                </div>
+                <span class="badge badge-emerald">{{ cand.skill_count }} Skills</span>
+            </div>
+            
+            <div style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1rem;">
+                <div>🎓 {{ cand.education }}</div>
+                <div>💼 {{ cand.experience }} experience</div>
+            </div>
+        </div>
+
+        <a href="/candidate/{{ cand.id }}" class="btn" style="text-align: center; justify-content: center; width: 100%;">
+            Explore Graph Profile &rarr;
+        </a>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

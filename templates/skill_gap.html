@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+
+{% block title %}Skill Gap Analysis - CareerGraph AI{% endblock %}
+
+{% block content %}
+<div class="card-header" style="border: none; padding: 0; margin-bottom: 1.5rem;">
+    <div>
+        <h2>Candidate Skill Gap Analysis</h2>
+        <p style="color: var(--text-muted);">Compare candidate graph skills against targeted role requirements.</p>
+    </div>
+</div>
+
+<!-- Selection Form -->
+<form method="GET" action="/skill-gap" class="filter-bar">
+    <div class="form-group">
+        <label class="form-label">Select Candidate</label>
+        <select name="candidate_id" class="form-select">
+            {% for cand in candidates %}
+                <option value="{{ cand.id }}" {% if cand.id == selected_cand_id %}selected{% endif %}>{{ cand.name }}</option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label class="form-label">Select Target Job Role</label>
+        <select name="role_id" class="form-select">
+            {% for role in roles %}
+                <option value="{{ role.id }}" {% if role.id == selected_role_id %}selected{% endif %}>{{ role.name }}</option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <button type="submit" class="btn">Run Analysis</button>
+</form>
+
+{% if gap_data %}
+<!-- Match Header -->
+<div class="card">
+    <div class="card-header">
+        <div>
+            <h3>Analysis: {{ gap_data.candidate_name }} ➔ {{ gap_data.role_name }}</h3>
+            <div style="font-size: 0.9rem; color: var(--text-muted);">
+                Matched {{ gap_data.total_matched }} of {{ gap_data.total_required }} required skills
+            </div>
+        </div>
+        <div style="text-align: right;">
+            <div style="font-size: 2rem; font-weight: 800; color: var(--accent-emerald);">{{ gap_data.match_percentage }}%</div>
+            <div style="font-size: 0.75rem; color: var(--text-muted);">MATCH SCORE</div>
+        </div>
+    </div>
+    <div class="progress-container" style="height: 14px;">
+        <div class="progress-bar" style="width: {{ gap_data.match_percentage }}%;"></div>
+    </div>
+</div>
+
+<!-- Skills Have vs Skills Need -->
+<div class="grid-2">
+    <div class="card">
+        <div class="card-header">
+            <div class="card-title" style="color: var(--accent-emerald);">SKILLS YOU HAVE</div>
+            <span class="badge badge-emerald">✓ {{ gap_data.skills_have | length }} Skills</span>
+        </div>
+        <div class="badge-list">
+            {% for skill in gap_data.skills_have %}
+                <span class="badge badge-emerald">✓ {{ skill }}</span>
+            {% else %}
+                <p style="color: var(--text-muted);">No matching skills found.</p>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <div class="card-title" style="color: var(--accent-rose);">SKILLS YOU NEED</div>
+            <span class="badge badge-rose">⚠ {{ gap_data.skills_need | length }} Missing</span>
+        </div>
+        <div class="badge-list">
+            {% for skill in gap_data.skills_need %}
+                <span class="badge badge-rose">⚠ {{ skill }}</span>
+            {% else %}
+                <p style="color: var(--accent-emerald);">Great job! You have all required skills for this role.</p>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<!-- Recommended Portfolio Projects -->
+<div class="card">
+    <div class="card-header">
+        <div class="card-title">Recommended Projects to Bridge Skill Gap</div>
+    </div>
+    <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1rem;">
+        Building these graph-indexed projects will demonstrate the missing skills required for {{ gap_data.role_name }}:
+    </p>
+    <div class="grid-3">
+        {% for proj in related_projects %}
+            <div style="background: var(--bg-dark); padding: 1rem; border-radius: var(--radius-sm); border: 1px solid var(--border-color);">
+                <strong>{{ proj.project_name }}</strong>
+                <p style="font-size: 0.85rem; color: var(--text-muted); margin: 0.5rem 0;">{{ proj.description }}</p>
+                <div style="font-size: 0.75rem; color: var(--accent-blue);">
+                    Skills Addressed: {{ proj.skills_addressed | join(', ') }}
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+{% endblock %}

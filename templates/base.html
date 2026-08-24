@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}CareerGraph AI{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar">
+        <a href="/" class="brand">
+            <div class="brand-logo">C</div>
+            <div class="brand-title">CareerGraph AI</div>
+        </a>
+        <ul class="nav-links">
+            <li><a href="/" class="nav-link {% if request.path == '/' %}active{% endif %}">Dashboard</a></li>
+            <li><a href="/candidates" class="nav-link {% if '/candidate' in request.path %}active{% endif %}">Candidates</a></li>
+            <li><a href="/jobs" class="nav-link {% if request.path == '/jobs' %}active{% endif %}">Job Roles</a></li>
+            <li><a href="/skill-gap" class="nav-link {% if request.path == '/skill-gap' %}active{% endif %}">Skill Gap Analysis</a></li>
+            <li><a href="/companies" class="nav-link {% if request.path == '/companies' %}active{% endif %}">Companies</a></li>
+        </ul>
+    </nav>
+
+    {% if db_error %}
+    <div class="alert-error">
+        <span style="font-size: 1.5rem;">⚠️</span>
+        <div>
+            <strong>Database Error:</strong> {{ db_error }}
+        </div>
+    </div>
+    {% endif %}
+
+    <main class="container">
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer>
+        <p>CareerGraph AI &copy; Wexa AI Take-Home Assignment | Built with CognoDB Graph Database &amp; Flask</p>
+    </footer>
+
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>

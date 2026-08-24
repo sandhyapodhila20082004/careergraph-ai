@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block title %}Job Roles - CareerGraph AI{% endblock %}
+
+{% block content %}
+<div class="card-header" style="border: none; padding: 0; margin-bottom: 1.5rem;">
+    <div>
+        <h2>Job Roles &amp; Skill Requirements</h2>
+        <p style="color: var(--text-muted);">Explore market role requirements and hiring companies.</p>
+    </div>
+</div>
+
+<div class="grid-2">
+    <!-- Role Selection List -->
+    <div class="card">
+        <div class="card-header">
+            <div class="card-title">Available Market Roles</div>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+            {% for role in roles %}
+                <a href="/jobs?role_id={{ role.id }}" 
+                   style="background: var(--bg-dark); padding: 1rem; border-radius: var(--radius-sm); border: 1px solid {% if selected_role and selected_role.id == role.id %}var(--accent-blue){% else %}var(--border-color){% endif %}; display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <strong style="color: var(--text-main);">{{ role.name }}</strong>
+                        <div style="font-size: 0.8rem; color: var(--text-muted);">{{ role.level }}</div>
+                    </div>
+                    <span class="badge">{{ role.skill_count }} Required Skills</span>
+                </a>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Selected Role Detail View -->
+    {% if selected_role %}
+    <div class="card">
+        <div class="card-header">
+            <div>
+                <h2>{{ selected_role.name }}</h2>
+                <span class="badge badge-emerald" style="margin-top: 0.25rem;">{{ selected_role.level }}</span>
+            </div>
+            <a href="/skill-gap?role_id={{ selected_role.id }}" class="btn">Analyze Skill Gap</a>
+        </div>
+        <p style="color: var(--text-muted); margin-bottom: 1.5rem;">{{ selected_role.description }}</p>
+
+        <h4>Required Graph Skills</h4>
+        <div class="badge-list" style="margin-bottom: 1.5rem;">
+            {% for skill in selected_role.skills %}
+                <span class="badge">{{ skill.name }}</span>
+            {% endfor %}
+        </div>
+
+        <h4>Hiring Companies ([:AVAILABLE_AT])</h4>
+        <div style="display: flex; flex-direction: column; gap: 0.5rem; margin-top: 0.5rem;">
+            {% for company in selected_role.companies %}
+                <div style="background: var(--bg-dark); padding: 0.75rem; border-radius: var(--radius-sm); border: 1px solid var(--border-color); display: flex; justify-content: space-between;">
+                    <strong>{{ company.name }}</strong>
+                    <span style="color: var(--text-muted); font-size: 0.85rem;">{{ company.location }}</span>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

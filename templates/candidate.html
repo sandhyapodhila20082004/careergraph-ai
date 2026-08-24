@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+
+{% block title %}{{ candidate.name }} - CareerGraph AI{% endblock %}
+
+{% block content %}
+<!-- Candidate Profile Header -->
+<div class="card">
+    <div class="card-header">
+        <div>
+            <h2>{{ candidate.name }}</h2>
+            <div style="color: var(--text-muted);">{{ candidate.education }} • {{ candidate.experience }} • {{ candidate.email }}</div>
+        </div>
+        <a href="/skill-gap?candidate_id={{ candidate.id }}" class="btn">Run Skill Gap Analysis</a>
+    </div>
+
+    <h4>Skills Inventory</h4>
+    <div class="badge-list" style="margin-top: 0.5rem; margin-bottom: 1.5rem;">
+        {% for skill in candidate.skills %}
+            <span class="badge">{{ skill.name }}</span>
+        {% endfor %}
+    </div>
+
+    <!-- Graph Visualization Element -->
+    <h4>2+ Hop Career Graph Visualization</h4>
+    <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.75rem;">
+        Visualizing direct relationships: Candidate ➔ Skills / Projects ➔ Recommended Job Roles ➔ Connected Companies
+    </p>
+    <div id="careerGraphVisualizer" class="graph-canvas" data-graph='{{ graph_data | tojson | safe }}'></div>
+</div>
+
+<div class="grid-2">
+    <!-- Projects Section -->
+    <div class="card">
+        <div class="card-header">
+            <div class="card-title">Projects Portfolio</div>
+        </div>
+        {% for proj in projects %}
+            <div style="background: var(--bg-dark); padding: 1rem; border-radius: var(--radius-sm); margin-bottom: 1rem; border: 1px solid var(--border-color);">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem;">
+                    <strong>{{ proj.name }}</strong>
+                    <span class="badge badge-amber">{{ proj.difficulty }}</span>
+                </div>
+                <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.5rem;">{{ proj.description }}</p>
+                <div style="font-size: 0.75rem; color: var(--accent-blue);">
+                    Skills Used: {{ proj.skills_used | join(', ') }}
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+    <!-- Recommendations Section -->
+    <div class="card">
+        <div class="card-header">
+            <div class="card-title">Recommended Job Roles</div>
+        </div>
+        {% for rec in recommendations %}
+            <div style="background: var(--bg-dark); padding: 1rem; border-radius: var(--radius-sm); margin-bottom: 1rem; border: 1px solid var(--border-color);">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <strong>{{ rec.name }}</strong>
+                    <span class="badge badge-emerald">{{ rec.match_percentage }}% Match</span>
+                </div>
+                <div class="progress-container">
+                    <div class="progress-bar" style="width: {{ rec.match_percentage }}%;"></div>
+                </div>
+                <div style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.5rem;">
+                    Matched Skills: {{ rec.matched_skill_names | join(', ') }}
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Multi-Hop Traversal Query Result Section -->
+<div class="card">
+    <div class="card-header">
+        <div class="card-title">Multi-Hop Traversal: Connected Companies</div>
+        <span class="badge">Candidate ➔ Skill ➔ JobRole ➔ Company</span>
+    </div>
+    <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1rem;">
+        These companies hire for roles that require {{ candidate.name }}'s verified skills:
+    </p>
+    <div class="grid-3">
+        {% for comp in companies_multihop %}
+            <div style="background: var(--bg-dark); padding: 1rem; border-radius: var(--radius-sm); border: 1px solid var(--border-color);">
+                <strong>{{ comp.company_name }}</strong>
+                <div style="font-size: 0.85rem; color: var(--text-muted);">{{ comp.industry }} • {{ comp.location }}</div>
+                <div style="font-size: 0.85rem; color: var(--accent-blue); margin-top: 0.5rem;">
+                    Via Role: <strong>{{ comp.via_role }}</strong>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

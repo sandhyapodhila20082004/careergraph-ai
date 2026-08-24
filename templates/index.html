@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - CareerGraph AI{% endblock %}
+
+{% block content %}
+<section class="hero">
+    <h1>Career Intelligence Engine</h1>
+    <p>Discover career opportunities through skills, projects, and multi-hop graph connections.</p>
+</section>
+
+<!-- Metrics Overview -->
+<div class="metrics-grid">
+    <div class="metric-card">
+        <div class="metric-icon">👤</div>
+        <div>
+            <div class="metric-val">{{ metrics.candidates }}</div>
+            <div class="metric-lbl">Total Candidates</div>
+        </div>
+    </div>
+    <div class="metric-card">
+        <div class="metric-icon">⚡</div>
+        <div>
+            <div class="metric-val">{{ metrics.skills }}</div>
+            <div class="metric-lbl">Total Skills</div>
+        </div>
+    </div>
+    <div class="metric-card">
+        <div class="metric-icon">💼</div>
+        <div>
+            <div class="metric-val">{{ metrics.roles }}</div>
+            <div class="metric-lbl">Total Job Roles</div>
+        </div>
+    </div>
+    <div class="metric-card">
+        <div class="metric-icon">🏢</div>
+        <div>
+            <div class="metric-val">{{ metrics.companies }}</div>
+            <div class="metric-lbl">Total Companies</div>
+        </div>
+    </div>
+</div>
+
+<!-- Graph Schema Traversal Section -->
+<div class="card">
+    <div class="card-header">
+        <div class="card-title">Graph Relationship Architecture</div>
+        <span class="badge">Multi-Hop Traversal</span>
+    </div>
+    <p style="color: var(--text-muted); margin-bottom: 1rem;">
+        CareerGraph AI traverses typed node relationships instantly without performance-degrading relational SQL JOINs:
+    </p>
+    <div style="background: var(--bg-dark); padding: 1.25rem; border-radius: var(--radius-sm); border: 1px solid var(--border-color); font-family: monospace; color: var(--accent-blue);">
+        (Candidate) ──[:HAS_SKILL]──> (Skill) ──[:REQUIRED_BY]──> (JobRole) ──[:AVAILABLE_AT]──> (Company)
+        <br>
+        (Candidate) ──[:WORKED_ON]──> (Project) ──[:USES_SKILL]──> (Skill)
+    </div>
+</div>
+
+<!-- Featured Spotlight: Sandhya -->
+{% if featured_candidate %}
+<div class="grid-2">
+    <div class="card">
+        <div class="card-header">
+            <div>
+                <div class="card-title">Featured Candidate: {{ featured_candidate.name }}</div>
+                <div style="color: var(--text-muted); font-size: 0.875rem;">{{ featured_candidate.education }} • {{ featured_candidate.experience }}</div>
+            </div>
+            <a href="/candidate/{{ featured_candidate.id }}" class="btn">Full Graph View</a>
+        </div>
+        
+        <h4 style="margin-bottom: 0.5rem;">Verified Graph Skills</h4>
+        <div class="badge-list">
+            {% for skill in featured_candidate.skills %}
+                <span class="badge">{{ skill.name }}</span>
+            {% endfor %}
+        </div>
+
+        <h4 style="margin-top: 1.25rem; margin-bottom: 0.5rem;">Projects</h4>
+        {% for proj in featured_projects %}
+            <div style="background: var(--bg-dark); padding: 0.75rem; border-radius: var(--radius-sm); margin-bottom: 0.5rem; border: 1px solid var(--border-color);">
+                <strong>{{ proj.name }}</strong>
+                <p style="font-size: 0.85rem; color: var(--text-muted);">{{ proj.description }}</p>
+            </div>
+        {% endfor %}
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <div class="card-title">Top Role Recommendations for {{ featured_candidate.name }}</div>
+        </div>
+        {% for rec in featured_recs %}
+            <div style="background: var(--bg-dark); padding: 1rem; border-radius: var(--radius-sm); margin-bottom: 1rem; border: 1px solid var(--border-color);">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <strong>{{ rec.name }}</strong>
+                    <span class="badge badge-emerald">{{ rec.match_percentage }}% Match</span>
+                </div>
+                <div class="progress-container">
+                    <div class="progress-bar" style="width: {{ rec.match_percentage }}%;"></div>
+                </div>
+                <div style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.5rem;">
+                    Matching Skills: {{ rec.matched_skill_names | join(', ') }}
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+{% endblock %}

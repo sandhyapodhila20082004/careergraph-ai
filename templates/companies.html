@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block title %}Companies Directory - CareerGraph AI{% endblock %}
+
+{% block content %}
+<div class="card-header" style="border: none; padding: 0; margin-bottom: 1.5rem;">
+    <div>
+        <h2>Hiring Companies Network</h2>
+        <p style="color: var(--text-muted);">Explore companies connected to roles and candidate skills.</p>
+    </div>
+</div>
+
+<div class="grid-2">
+    <!-- Company Selection List -->
+    <div class="card">
+        <div class="card-header">
+            <div class="card-title">Companies</div>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+            {% for comp in companies %}
+                <a href="/companies?company_id={{ comp.id }}" 
+                   style="background: var(--bg-dark); padding: 1rem; border-radius: var(--radius-sm); border: 1px solid {% if selected_company and selected_company.id == comp.id %}var(--accent-blue){% else %}var(--border-color){% endif %}; display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <strong style="color: var(--text-main);">{{ comp.name }}</strong>
+                        <div style="font-size: 0.8rem; color: var(--text-muted);">{{ comp.industry }} • {{ comp.location }}</div>
+                    </div>
+                    <span class="badge">{{ comp.open_roles_count }} Roles</span>
+                </a>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Selected Company Details -->
+    {% if selected_company %}
+    <div class="card">
+        <div class="card-header">
+            <div>
+                <h2>{{ selected_company.name }}</h2>
+                <div style="color: var(--text-muted); font-size: 0.9rem;">{{ selected_company.industry }} • {{ selected_company.location }}</div>
+            </div>
+        </div>
+
+        <h4>Available Job Roles</h4>
+        <div style="display: flex; flex-direction: column; gap: 0.5rem; margin-top: 0.5rem; margin-bottom: 1.5rem;">
+            {% for role in selected_company.roles %}
+                <div style="background: var(--bg-dark); padding: 0.75rem; border-radius: var(--radius-sm); border: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+                    <strong>{{ role.name }}</strong>
+                    <span class="badge badge-emerald">{{ role.level }}</span>
+                </div>
+            {% endfor %}
+        </div>
+
+        <h4>Potential Candidate Matches (Graph Overlap)</h4>
+        <div class="badge-list" style="margin-top: 0.5rem;">
+            {% for cand in selected_company.qualified_candidates %}
+                <a href="/candidate/{{ cand.id }}" class="badge badge-amber" style="text-decoration: none;">👤 {{ cand.name }} ({{ cand.experience }})</a>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
